@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math/rand"
+	"strconv"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -18,6 +20,13 @@ type dbManager interface {
 	insert() error
 	get(id string) error
 	delete() error
+}
+
+type Car struct {
+	Id          string `json:"id"`
+	Brand       string `json:"brand" validate:"required,alphanum"`
+	Model       string `json:"model" validate:"required,alphanum"`
+	Horse_power uint32 `json:"horse_power" validate:"required,gte=0,lte=10000"`
 }
 
 type Token struct {
@@ -129,6 +138,44 @@ type interfaceToken interface {
 	GetToken(access bool) error
 	DeleteToken(access bool) error
 }
+
+/// past
+
+func (car *Car) insert() error {
+	var db = newConnect()
+	car.Id = car.Brand[1:3] + strconv.Itoa(rand.Intn(1000)) + car.Model[1:3]
+	_, err := db.Query(fmt.Sprintf("INSERT INTO cars VALUES ( '%s' ,'%s','%s',%d );", car.Id, car.Brand, car.Model, car.Horse_power))
+	if err != nil {
+		_, err = db.Query(fmt.Sprintf("UPDATE cars SET brand = '%s' , model = '%s', horse_power = %d  WHERE  id = '%s';", car.Brand, car.Model, car.Horse_power, car.Id))
+		if err != nil {
+			return err
+		}
+	}
+	defer db.Close()
+	return err
+}
+
+func (car *Car) get(id string) error {
+	var db = newConnect()
+	err := db.QueryRow("SELECT id,brand,model,horse_power FROM cars WHERE id = ?", id).Scan(&car.Id, &car.Brand, &car.Model, &car.Horse_power)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	return err
+}
+
+func (car *Car) delete() error {
+	var db = newConnect()
+	_, err := db.Query(fmt.Sprintf("DELETE FROM cars WHERE id = '%s'", car.Id))
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	return err
+}
+
+///
 
 func (token *Token) Insert(access bool, source bool) error {
 
