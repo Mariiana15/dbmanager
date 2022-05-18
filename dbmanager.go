@@ -48,7 +48,7 @@ func deleteDB(db dbManager) error {
 	return err
 }
 
-func newToken() interfaceToken {
+func NewToken() interfaceToken {
 	return &Token{}
 }
 
