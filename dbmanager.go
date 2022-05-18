@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math/rand"
+	"strconv"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -42,8 +44,8 @@ func DeleteDB(db DbManager) error {
 	return err
 }
 
-/*func (car *Car) Insert() error {
-	var db = newConnect()
+func (car *Car) Insert() error {
+	var db = NewConnect()
 	car.Id = car.Brand[1:3] + strconv.Itoa(rand.Intn(1000)) + car.Model[1:3]
 	_, err := db.Query(fmt.Sprintf("INSERT INTO cars VALUES ( '%s' ,'%s','%s',%d );", car.Id, car.Brand, car.Model, car.Horse_power))
 	if err != nil {
@@ -56,8 +58,8 @@ func DeleteDB(db DbManager) error {
 	return err
 }
 
-func (car *Car) get(id string) error {
-	var db = newConnect()
+func (car *Car) Get(id string) error {
+	var db = NewConnect()
 	err := db.QueryRow("SELECT id,brand,model,horse_power FROM cars WHERE id = ?", id).Scan(&car.Id, &car.Brand, &car.Model, &car.Horse_power)
 	if err != nil {
 		return err
@@ -66,8 +68,8 @@ func (car *Car) get(id string) error {
 	return err
 }
 
-func (car *Car) delete() error {
-	var db = newConnect()
+func (car *Car) Delete() error {
+	var db = NewConnect()
 	_, err := db.Query(fmt.Sprintf("DELETE FROM cars WHERE id = '%s'", car.Id))
 	if err != nil {
 		return err
@@ -75,7 +77,7 @@ func (car *Car) delete() error {
 	defer db.Close()
 	return err
 }
-*/
+
 ///////TFM
 
 func (auth *Auth) GetUserBasic(id string, email string) error {
