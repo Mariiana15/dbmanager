@@ -1,5 +1,12 @@
 package dbmanager
 
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/go-playground/validator"
+)
+
 type ObjectGenericDB struct {
 	Id string `json:"id"`
 }
@@ -93,4 +100,23 @@ type Section struct {
 	Gid       string  `json:"gid"`
 	Project   General `json:"project"`
 	StoryUser []Task  `json:"storyUser"`
+}
+
+var validate *validator.Validate
+
+func (car *Car) ToJson() ([]byte, error) {
+	return json.Marshal(car)
+}
+
+func (car *Car) ValidateStructure() (string, error) {
+	validate = validator.New()
+	var msg string
+	err := validate.Struct(car)
+	if err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			return err.Error(), err
+		}
+		return fmt.Sprintf("The field %s is mal format", err.(validator.ValidationErrors)[0].StructField()), err
+	}
+	return msg, err
 }
