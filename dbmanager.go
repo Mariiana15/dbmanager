@@ -22,6 +22,98 @@ type DbManager interface {
 	delete() error
 }
 
+type Token struct {
+	UserId   string `json:"userId"`
+	Token    string `json:"token"`
+	Id       string `json:"id"`
+	ExpireAt int64  `json:"expireAt"`
+	State    string `json:"state"`
+}
+
+type Asana struct {
+	ClientId      string `json:"clientId"`
+	ClientSecret  string `json:"clientSecrect"`
+	RedirectUri   string `json:"redirect_uri"`
+	TimeAsyncTask int16  `json:"timeAsyncTask"`
+}
+
+type General struct {
+	Gid  string `json:"gid"`
+	Name string `json:"name"`
+}
+
+type Story struct {
+	Gid  string `json:"gid"`
+	Type string `json:"type"`
+	Text string `json:"text"`
+}
+
+type CustomField struct {
+	Gid   string `json:"gid"`
+	Name  string `json:"name"`
+	Value string `json:"display_value"`
+}
+
+type Task struct {
+	Id           string        `json:"id"`
+	Hid          string        `json:"hid"`
+	Gid          string        `json:"gid"`
+	UserId       string        `json:"userId"`
+	Name         string        `json:"name"`
+	Notes        string        `json:"notes"`
+	CustomField  []CustomField `json:"custom_fields"`
+	Link         string        `json:"permalink_url"`
+	Story        []Story       `json:"stories"`
+	Dependecies  []General     `json:"dependencies"`
+	State        string        `json:"state"`
+	TypeTest     string        `json:"typeTest"`
+	TypeTestId   string        `json:"typeTestId"`
+	TypeUS       string        `json:"typeUS"`
+	UserStory    string        `json:"userStory"`
+	Priority     int           `json:"priority"`
+	Alerts       int           `json:"alerts"`
+	Scripts      int           `json:"scripts"`
+	Date         int64         `json:"date"`
+	UrlAlert     string        `json:"urlAlert"`
+	UrlScript    string        `json:"urlScript"`
+	AddInfo      int8          `json:"addInfo"`
+	Test         General       `json:"test"`
+	Result       Result        `json:"result"`
+	Tecnologies  string        `json:"technologies"`
+	Requirement  string        `json:"requirement"`
+	Architecture string        `json:"architecture"`
+}
+
+type Result struct {
+	Message   string `json:"message"`
+	Alert     int    `json:"alert"`
+	UrlAlert  string `json:"urlAlert"`
+	Detail    string `json:"detail"`
+	Script    int    `json:"script"`
+	UrlScript string `json:"urlScript"`
+}
+
+type Section struct {
+	Name      string  `json:"name"`
+	ID        string  `json:"id"`
+	Gid       string  `json:"gid"`
+	Project   General `json:"project"`
+	StoryUser []Task  `json:"storyUser"`
+}
+
+type Car struct {
+	Id          string `json:"id"`
+	Brand       string `json:"brand" validate:"required,alphanum"`
+	Model       string `json:"model" validate:"required,alphanum"`
+	Horse_power uint32 `json:"horse_power" validate:"required,gte=0,lte=10000"`
+}
+
+type Auth struct {
+	User string `json:"user"`
+	Pass string `json:"pass"`
+	Id   string `json:"id"`
+}
+
 func NewConnect() *sql.DB {
 	db, err := sql.Open("mysql", "tfm:tfm@tcp(localhost:3306)/hqa")
 	if err != nil {
@@ -113,7 +205,7 @@ func (token *Token) Insert(access bool, source bool) error {
 	if !access {
 		table = "user_refresh_token"
 	}
-	err = setTableToken(db, *token, table, source)
+	err = SetTableToken(db, *token, table, source)
 	if err != nil {
 		return err
 	}
@@ -258,7 +350,7 @@ func (dependecie *General) SetUserStoryAsanaDependence(idTask string) error {
 func (task *Task) SetUserStoryAsanaDependence() error {
 
 	for i := 0; i <= len(task.Dependecies)-1; i++ {
-		err := task.Dependecies[i].setUserStoryAsanaDependence(task.Id)
+		err := task.Dependecies[i].SetUserStoryAsanaDependence(task.Id)
 		if err != nil {
 			return err
 		}
@@ -281,7 +373,7 @@ func (cfield *CustomField) SetUserStoryAsanaCField(idTask string) error {
 func (task *Task) SetUserStoryAsanaCField() error {
 
 	for i := 0; i <= len(task.CustomField)-1; i++ {
-		err := task.CustomField[i].setUserStoryAsanaCField(task.Id)
+		err := task.CustomField[i].SetUserStoryAsanaCField(task.Id)
 		if err != nil {
 			return err
 		}
@@ -304,7 +396,7 @@ func (story *Story) SetUserStoryAsanaStories(idTask string) error {
 func (task *Task) SetUserStoryAsanaStories() error {
 
 	for i := 0; i <= len(task.Story)-1; i++ {
-		err := task.Story[i].setUserStoryAsanaStories(task.Id)
+		err := task.Story[i].SetUserStoryAsanaStories(task.Id)
 		if err != nil {
 			return err
 		}
@@ -397,7 +489,7 @@ func GetSectionDB(userId string, sections *[]Section) error {
 	for response.Next() {
 		response.Scan(&sec.ID, &sec.Name, &sec.Gid, &sec.Project.Gid, &sec.Project.Name)
 		var task []Task
-		getTaskDB(sec, &task)
+		GetTaskDB(sec, &task)
 		sec.StoryUser = task
 		*sections = append(*sections, sec)
 	}
@@ -420,13 +512,13 @@ func GetTaskDB(sec Section, task *[]Task) error {
 		var cf []CustomField
 		var st []Story
 
-		getDependence(t, &d)
-		getCField(t, &cf)
-		getStories(t, &st)
+		GetDependence(t, &d)
+		GetCField(t, &cf)
+		GetStories(t, &st)
 		t.Dependecies = d
 		t.CustomField = cf
 		t.Story = st
-		getUserStoryFromAsana(&t, task)
+		GetUserStoryFromAsana(&t, task)
 	}
 	defer db.Close()
 	return nil
