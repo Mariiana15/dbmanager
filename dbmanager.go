@@ -3,6 +3,7 @@ package dbmanager
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	uuid "github.com/satori/go.uuid"
@@ -169,3 +170,36 @@ func (auth *Auth) GetUserBasic(id string, email string) error {
 	return err
 
 }
+
+///////TFM
+
+func SetUserCodeAsana(userId string, codeVerifier string, code string) error {
+
+	var db = newConnect()
+	id := uuid.NewV4().String()
+	_, err := db.Query(fmt.Sprintf("INSERT user_code_asana VALUES ('%v','%v','%v','%v', '%v')", id, userId, codeVerifier, code, time.Now().Unix()))
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	return nil
+}
+
+func GetUserCodeAsana(userId string) (string, string, error) {
+
+	var db = newConnect()
+	var code string
+	var code_verifier string
+
+	response, err := db.Query(fmt.Sprintf("SELECT code_verifier, code FROM user_code_asana where userId= '%v'", userId))
+	if err != nil {
+		return "", "", err
+	}
+	for response.Next() {
+		response.Scan(&code_verifier, &code)
+	}
+	defer db.Close()
+	return code, code_verifier, nil
+}
+
+/////
