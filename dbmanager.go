@@ -30,14 +30,7 @@ type Token struct {
 	State    string `json:"state"`
 }
 
-type Asana struct {
-	ClientId      string `json:"clientId"`
-	ClientSecret  string `json:"clientSecrect"`
-	RedirectUri   string `json:"redirect_uri"`
-	TimeAsyncTask int16  `json:"timeAsyncTask"`
-}
-
-type General struct {
+type general struct {
 	Gid  string `json:"gid"`
 	Name string `json:"name"`
 }
