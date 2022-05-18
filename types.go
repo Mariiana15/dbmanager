@@ -5,9 +5,9 @@ type ObjectGenericDB struct {
 }
 
 type dbManager interface {
-	insert() error
-	get(id string) error
-	delete() error
+	Insert() error
+	Get(id string) error
+	Delete() error
 }
 
 type Car struct {

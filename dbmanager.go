@@ -19,18 +19,18 @@ func newConnect() *sql.DB {
 	}
 	return db
 }
-func insertDB(db dbManager) error {
-	err := db.insert()
+func InsertDB(db dbManager) error {
+	err := db.Insert()
 	return err
 }
 
-func getDB(db dbManager, id string) error {
-	err := db.get(id)
+func GetDB(db dbManager, id string) error {
+	err := db.Get(id)
 	return err
 }
 
-func deleteDB(db dbManager) error {
-	err := db.delete()
+func DeleteDB(db dbManager) error {
+	err := db.Delete()
 	return err
 }
 
@@ -46,7 +46,7 @@ type interfaceToken interface {
 
 /// past
 
-func (car *Car) insert() error {
+func (car *Car) Insert() error {
 	var db = newConnect()
 	car.Id = car.Brand[1:3] + strconv.Itoa(rand.Intn(1000)) + car.Model[1:3]
 	_, err := db.Query(fmt.Sprintf("INSERT INTO cars VALUES ( '%s' ,'%s','%s',%d );", car.Id, car.Brand, car.Model, car.Horse_power))
@@ -60,7 +60,7 @@ func (car *Car) insert() error {
 	return err
 }
 
-func (car *Car) get(id string) error {
+func (car *Car) Get(id string) error {
 	var db = newConnect()
 	err := db.QueryRow("SELECT id,brand,model,horse_power FROM cars WHERE id = ?", id).Scan(&car.Id, &car.Brand, &car.Model, &car.Horse_power)
 	if err != nil {
@@ -70,7 +70,7 @@ func (car *Car) get(id string) error {
 	return err
 }
 
-func (car *Car) delete() error {
+func (car *Car) Delete() error {
 	var db = newConnect()
 	_, err := db.Query(fmt.Sprintf("DELETE FROM cars WHERE id = '%s'", car.Id))
 	if err != nil {
