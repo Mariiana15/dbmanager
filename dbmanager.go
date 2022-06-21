@@ -11,13 +11,15 @@ import (
 
 func newConnect() *sql.DB {
 
-	db, err := sql.Open("mysql", "dbhqa1:dbhqa1@tcp(35.224.168.227:3306)/hqa")
+	db, err := sql.Open("mysql", "tfm:tfm@tcp(35.224.168.227:3306)/hqa")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 	return db
+
 }
 func InsertDB(db dbManager) error {
+
 	err := db.Insert()
 	return err
 }
