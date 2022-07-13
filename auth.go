@@ -87,8 +87,6 @@ func (token *Token) DeleteToken(access bool) error {
 	return nil
 }
 
-//////////////////////
-
 func (auth *Auth) GetUserBasic(id string, email string) error {
 
 	var db = newConnect()
