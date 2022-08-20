@@ -4,14 +4,20 @@ import (
 	"database/sql"
 	"fmt"
 	"math/rand"
+	"os"
 	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 func newConnect() *sql.DB {
 
-	db, err := sql.Open("mysql", "tfm:tfm@tcp(localhost:3306)/hqa")
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
+	db, err := sql.Open("mysql", "tfm:"+os.Getenv("CONNECTION_STRING"))
 	if err != nil {
 		fmt.Println(err.Error())
 	}
