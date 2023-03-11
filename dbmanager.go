@@ -86,4 +86,21 @@ func (car *Car) Delete() error {
 	return err
 }
 
+func GetIndustryHQA(s string) error {
+
+	var db = newConnect()
+	var r Industry
+	t.Result = r
+	response, err := db.Query(fmt.Sprintf("SELECT alert, detail, message, script, urlAlert, urlScript FROM user_story_result where hid= '%v'", t.Hid))
+	if err != nil {
+		return err
+	}
+	for response.Next() {
+		response.Scan(&t.Result.Alert, &t.Result.Detail, &t.Result.Message, &t.Result.Script, &t.Result.UrlAlert, &t.Result.UrlScript)
+	}
+	defer db.Close()
+	return nil
+
+}
+
 ///
