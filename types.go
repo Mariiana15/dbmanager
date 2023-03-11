@@ -84,7 +84,7 @@ type Task struct {
 	RiskStakeholder string        `json:"riskStakeholder"`
 	Activity 	    string        `json:"activity"`
 	RiskActivity    string        `json:"riskActivity"`
-	Risk		    string        `json:"risk"`
+	Risk     	    string        `json:"risk"`
 }
 
 type Result struct {
